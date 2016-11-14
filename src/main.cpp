@@ -1,5 +1,6 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
+#include <cstring>
 
 int* initBoard(int*, int, int);
 void swapTiles(int*, int, int, int, int, int, int);
