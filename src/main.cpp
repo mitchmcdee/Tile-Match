@@ -7,7 +7,7 @@ void swapTiles(int*, int, int, int, int, int, int);
 void checkConnections(int* board, int width, int height, int stack[][2], int visited[][2], int *stackCount, int *visitedCount, int sourceX, int sourceY);
 
 
-    int* initBoard(int* board, int width, int height) {
+int* initBoard(int* board, int width, int height) {
     for(int x = 0; x < width; x++) {
         for(int y = 0; y < height; y++) {
             board[x*width + y] = rand() % 5;
@@ -21,8 +21,8 @@ void swapTiles(int* board, int width, int height, int x1, int y1, int x2, int y2
     int xDiff = abs(x1 - x2);
     int yDiff = abs(y1 - y2);
 
-    // check tiles aren't more than two away and are on same row/column
-    if (xDiff > 1 || yDiff > 1 || (xDiff && yDiff)) {
+    // check tiles aren't more than two away and are on same row/column and are not equal
+    if (xDiff > 1 || yDiff > 1 || (xDiff && yDiff) || (!xDiff && !yDiff)) {
         return;
     }
 
@@ -51,37 +51,58 @@ void swapTiles(int* board, int width, int height, int x1, int y1, int x2, int y2
             board[visited[i][0] * width + visited[i][1]] = -1;
         }
     }
+
+    for(int x = 0; x < width; x++) {
+        for(int y = 0; y < height; y++) {
+
+            // if black box (aka cleared box) is encountered, perform falling fill
+            if (board[x*width + y] == -1) {
+
+                // shift blocks down and add a random block to the start
+                for(int z = y; z > 0; z--) {
+                    board[x*width + z] = board[x*width + z-1];
+                }
+                board[x*width + 0] = rand() % 5;
+            }
+        }
+    }
 }
 
 
-//DFS with source as the final swap pos
+// UP-LEFT-DOWN-RIGHT hierarchy DFS to find connected cells of same colour
 void checkConnections(int* board, int width, int height, int stack[][2], int visited[][2], int *stackCount, int *visitedCount, int sourceX, int sourceY) {
+    // check if cell is in stack already, if so: exit
     for(int i = 0; i < *stackCount; i++) {
         if (stack[i][0] == sourceX && stack[i][1] == sourceY) {
             return;
         }
     }
 
+    // add current
     stack[*stackCount][0] = sourceX;
     stack[(*stackCount)++][1] = sourceY;
 
-    // ULDR heirachy DFS
+    // Check if there is an 'up' neighbour of same colour, if so: perform DFS on it
     if (sourceY-1 >= 0 && board[sourceX*width + sourceY-1] == board[sourceX*width + sourceY]) {
         checkConnections(board, width, height, stack, visited, stackCount, visitedCount, sourceX, sourceY-1);
     }
+    // Check if there is an 'left' neighbour of same colour, if so: perform DFS on it
     if (sourceX-1 >= 0 && board[(sourceX-1)*width + sourceY] == board[sourceX*width + sourceY]) {
         checkConnections(board, width, height, stack, visited, stackCount, visitedCount, sourceX-1, sourceY);
     }
+    // Check if there is an 'down' neighbour of same colour, if so: perform DFS on it
     if (sourceY+1 < height && board[sourceX*width + sourceY+1] == board[sourceX*width + sourceY]) {
         checkConnections(board, width, height, stack, visited, stackCount, visitedCount, sourceX, sourceY+1);
     }
+    // Check if there is an 'right' neighbour of same colour, if so: perform DFS on it
     if (sourceX+1 < width && board[(sourceX+1)*width + sourceY] == board[sourceX*width + sourceY]) {
         checkConnections(board, width, height, stack, visited, stackCount, visitedCount, sourceX+1, sourceY);
     }
+
+    // set cell as visited
     visited[*visitedCount][0] = sourceX;
     visited[(*visitedCount)++][1] = sourceY;
 }
-
 
 
 int main() {
@@ -89,7 +110,7 @@ int main() {
     unsigned int windowHeight = 1000;
     int boardWidth = 10;
     int boardHeight = 10;
-    int gap = 10;
+    int gap = 2;
 
     int board[boardWidth * boardHeight];
     int prevSelectedX = -1;
