@@ -1,6 +1,7 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <cstring>
+#include <string>
 #include <unistd.h>
 #include <cmath>
 
