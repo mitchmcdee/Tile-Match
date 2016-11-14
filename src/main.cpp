@@ -1,9 +1,11 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <cstring>
+#include <unistd.h>
+#include <cmath>
 
 int* initBoard(int*, int, int);
-void swapTiles(int*, int, int, int, int, int, int);
+void swapTiles(int*, int*, int, int, int, int, int, int);
 void checkConnections(int* board, int width, int height, int stack[][2], int visited[][2], int *stackCount, int *visitedCount, int sourceX, int sourceY);
 
 
@@ -17,7 +19,7 @@ int* initBoard(int* board, int width, int height) {
 }
 
 
-void swapTiles(int* board, int width, int height, int x1, int y1, int x2, int y2) {
+void swapTiles(int* board, int* score, int width, int height, int x1, int y1, int x2, int y2) {
     int xDiff = abs(x1 - x2);
     int yDiff = abs(y1 - y2);
 
@@ -31,32 +33,38 @@ void swapTiles(int* board, int width, int height, int x1, int y1, int x2, int y2
         return;
     }
 
+    // perform swap
     int tempTile = board[x1*width + y1];
     board[x1*width + y1] = board[x2*width + y2];
     board[x2*width + y2] = tempTile;
 
+    // perform DFS to obtain all connected cells
     int visited[width*height][2];
     int stack[width*height][2];
     int visitedCount = 0;
     int stackCount = 0;
     checkConnections(board, width, height, stack, visited, &stackCount, &visitedCount, x1, y1);
     if (visitedCount >= 3) {
+        *score += (int)std::pow(visitedCount, 2);
         for (int i = 0; i < visitedCount; i++) {
             board[visited[i][0] * width + visited[i][1]] = -1;
         }
     }
 
+    // reset variables and perform DFS to obtain all connected cells
     memset(visited, 0, sizeof(visited[0][0]) * width*height*2);
     memset(stack, 0, sizeof(stack[0][0]) * width*height*2);
     visitedCount = 0;
     stackCount = 0;
     checkConnections(board, width, height, stack, visited, &stackCount, &visitedCount, x2, y2);
-    if (visitedCount >= 3) {
+    if (visitedCount < 3) {
+        *score += (int)std::pow(visitedCount, 2);
         for (int i = 0; i < visitedCount; i++) {
             board[visited[i][0] * width + visited[i][1]] = -1;
         }
     }
 
+    // update grid
     for(int x = 0; x < width; x++) {
         for(int y = 0; y < height; y++) {
 
@@ -66,6 +74,7 @@ void swapTiles(int* board, int width, int height, int x1, int y1, int x2, int y2
                 // shift blocks down and add a random block to the start
                 for(int z = y; z > 0; z--) {
                     board[x*width + z] = board[x*width + z-1];
+
                 }
                 board[x*width + 0] = rand() % 5;
             }
@@ -111,6 +120,7 @@ void checkConnections(int* board, int width, int height, int stack[][2], int vis
 
 
 int main() {
+    unsigned int scoreHeight = 100;
     unsigned int windowWidth = 1000;
     unsigned int windowHeight = 1000;
     int boardWidth = 10;
@@ -122,12 +132,13 @@ int main() {
     int prevSelectedY = -1;
     int mouseX = -1;
     int mouseY = -1;
+    int score = 0;
 
     float cellWidth = (windowWidth - ((boardWidth+1) * gap)) / (float)boardWidth;
     float cellHeight = (windowHeight - ((boardHeight+1) * gap)) / (float)boardHeight;
 
     // create the window
-    sf::RenderWindow window(sf::VideoMode(windowWidth, windowHeight),
+    sf::RenderWindow window(sf::VideoMode(windowWidth, windowHeight + scoreHeight),
                             "Tile Match", sf::Style::Titlebar | sf::Style::Close);
 
     initBoard(board, boardWidth, boardHeight);
@@ -159,7 +170,7 @@ int main() {
                             prevSelectedX = selectedX;
                             prevSelectedY = selectedY;
                         } else {
-                            swapTiles(board, boardWidth, boardHeight,
+                            swapTiles(board, &score, boardWidth, boardHeight,
                                       selectedX, selectedY, prevSelectedX, prevSelectedY);
                             prevSelectedX = -1;
                             prevSelectedY = -1;
@@ -210,6 +221,24 @@ int main() {
                 window.draw(rectangle);
             }
         }
+
+
+        char buffer[1024];
+        char *answer = getcwd(buffer, sizeof(buffer));
+        std::string s_cwd;
+        if (answer)
+        {
+            s_cwd = answer;
+        }
+
+        sf::Font font;
+        font.loadFromFile(s_cwd + "/src/resources/arial.ttf");
+
+        sf::Text scoreText(std::to_string(score), font);
+        scoreText.setCharacterSize(64);
+        scoreText.setFillColor(sf::Color::White);
+        scoreText.setPosition(30, windowHeight);
+        window.draw(scoreText);
 
         window.display();
     }
