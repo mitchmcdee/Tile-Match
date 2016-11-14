@@ -95,26 +95,6 @@ if(SFML_FIND_VERSION AND SFML_INCLUDE_DIR)
     if (NOT "${SFML_VERSION_PATCH}" MATCHES "^[0-9]+$")
         set(SFML_VERSION_PATCH 0)
     endif()
-#    math(EXPR SFML_REQUESTED_VERSION "${SFML_FIND_VERSION_MAJOR} * 10000 + ${SFML_FIND_VERSION_MINOR} * 100 + ${SFML_FIND_VERSION_PATCH}")
-
-    # if we could extract them, compare with the requested version number
-    if (SFML_VERSION_MAJOR)
-        # transform version numbers to an integer
-        math(EXPR SFML_VERSION "${SFML_VERSION_MAJOR} * 10000 + ${SFML_VERSION_MINOR} * 100 + ${SFML_VERSION_PATCH}")
-
-        # compare them
-        if(SFML_VERSION LESS SFML_REQUESTED_VERSION)
-            set(SFML_VERSION_OK FALSE)
-        endif()
-    else()
-        # SFML version is < 2.0
-        if (SFML_REQUESTED_VERSION GREATER 10900)
-            set(SFML_VERSION_OK FALSE)
-            set(SFML_VERSION_MAJOR 1)
-            set(SFML_VERSION_MINOR x)
-            set(SFML_VERSION_PATCH x)
-        endif()
-    endif()
 endif()
 
 # find the requested modules
