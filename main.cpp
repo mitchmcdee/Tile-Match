@@ -33,6 +33,17 @@ void swapTiles(int* board, int width, int height, int x1, int y1, int x2, int y2
     int stack[width*height][2];
     int visitedCount = 0;
     int stackCount = 0;
+    checkConnections(board, width, height, stack, visited, &stackCount, &visitedCount, x1, y1);
+    if (visitedCount >= 3) {
+        for (int i = 0; i < visitedCount; i++) {
+            board[visited[i][0] * width + visited[i][1]] = -1;
+        }
+    }
+
+    memset(visited, 0, sizeof(visited[0][0]) * width*height*2);
+    memset(stack, 0, sizeof(stack[0][0]) * width*height*2);
+    visitedCount = 0;
+    stackCount = 0;
     checkConnections(board, width, height, stack, visited, &stackCount, &visitedCount, x2, y2);
     if (visitedCount >= 3) {
         for (int i = 0; i < visitedCount; i++) {
