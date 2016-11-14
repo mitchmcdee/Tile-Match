@@ -21,8 +21,13 @@ void swapTiles(int* board, int width, int height, int x1, int y1, int x2, int y2
     int xDiff = abs(x1 - x2);
     int yDiff = abs(y1 - y2);
 
-    // check tiles aren't more than two away and are on same row/column and are not equal
-    if (xDiff > 1 || yDiff > 1 || (xDiff && yDiff) || (!xDiff && !yDiff)) {
+    // check tiles aren't:
+    //      - more than one tile distance away from each other
+    //      - diagonal neighbours
+    //      - the same tile
+    //      - the same colour tile
+    if (xDiff > 1 || yDiff > 1 || (xDiff && yDiff) || (!xDiff && !yDiff) ||
+            board[x1*width + y1] == board[x2*width + y2]) {
         return;
     }
 
