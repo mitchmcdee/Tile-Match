@@ -1,27 +1,11 @@
 language: cpp
 
-cache:
-  apt: true
-  directories:
-  - "deps/SFML/build/install"
-
 install:
-  - pushd .
-  # SFML 2.3 has new dependencies that Travis doesn't have
-  - cd deps/SFML
-  - git checkout 2.2
-  - popd && pushd .
-  # Build SFML
-  - if [ ! -d "deps/SFML/build/install/lib" ]; then export REBUILD_SFML="yes"; else export REBUILD_SFML="no"; fi
-  - if [ "$REBUILD_SFML" == "yes" ]; then cd deps/SFML && rm -rf build && mkdir build && cd build; fi
-  - if [ "$REBUILD_SFML" == "yes" ]; then cmake .. -DCMAKE_INSTALL_PREFIX="$(pwd)/install" && cmake --build . && cmake --build . --target install; fi
-  - if [ "$REBUILD_SFML" == "yes" ]; then cd install/lib; fi
-  - if [ "$REBUILD_SFML" == "no"  ]; then cd deps/SFML/build/install/lib; fi
-  - export PATH="$(pwd):$PATH" && cd .. && export SFML_ROOT="$(pwd)"
-  - popd && pushd .
+  - sudo apt-get install libsfml-dev
 
-script:
-  - mkdir build && cd build
-  - cmake .. -DSFML_ROOT="$SFML_ROOT"
-  - cmake --build .
-#  - ctest -VV
+before_script:
+    - mkdir build
+    - cd build
+    - cmake ..
+
+script: make

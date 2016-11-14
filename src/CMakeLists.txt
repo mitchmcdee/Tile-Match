@@ -4,7 +4,7 @@ set(SOURCE_FILES main.cpp)
 add_executable(tile_match ${SOURCE_FILES})
 
 #Find and add SFML
-set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/deps/SFML/cmake/Modules" ${CMAKE_MODULE_PATH})
+set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake_modules" ${CMAKE_MODULE_PATH})
 if(WIN32)
 	find_package(SFML 2 REQUIRED COMPONENTS audio graphics network system window main)
 else()
