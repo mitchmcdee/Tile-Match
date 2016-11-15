@@ -1,37 +1,42 @@
 language: cpp
 compiler: gcc
-sudo: true
+sudo: false
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+      - kalakris/cmake #backport cmake for ubuntu v12
+    packages:
+      - g++-5
+      - cmake
+      - libudev-dev
+      - libpthread-stubs0-dev
+      - libgl1-mesa-dev
+      - libx11-dev
+      - libxrandr-dev
+      - libfreetype6-dev
+      - libglew1.5-dev
+      - libjpeg8-dev
+      - libsndfile1-dev
+      - libopenal-dev
+      - libflac-dev
+      - libjpeg-dev
+cache:
+  apt: true
+  directories:
+  - "$HOME/.travis/cmake/build/install"
+  - "SFML-2.4.1"
 
 before_install:
-  - sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
-  - sudo apt-get update -qq
+  - if [ "$CC"  == "gcc"     ]; then export CC=gcc-5; fi
+  - if [ "$CXX" == "g++"     ]; then export CXX=g++-5; fi
 
 install:
-  # install SFML deps
-  - sudo apt-get install libudev-dev
-  - sudo apt-get install libpthread-stubs0-dev
-  - sudo apt-get install libgl1-mesa-dev
-  - sudo apt-get install libx11-dev
-  - sudo apt-get install libxrandr-dev
-  - sudo apt-get install libfreetype6-dev
-  - sudo apt-get install libglew1.5-dev
-  - sudo apt-get install libjpeg8-dev
-  - sudo apt-get install libsndfile1-dev
-  - sudo apt-get install libopenal-dev
-  - sudo apt-get install libflac-dev
-  - sudo apt-get install libjpeg-dev
-  - sudo apt-get install libxcb-image0-dev
-  # install g++
-  - sudo apt-get install -qq g++-5
-  # build and install SFML
-  - mkdir sfml_install
-  - wget http://www.sfml-dev.org/files/SFML-2.4.1-sources.zip --no-check-certificate
-  - unzip -q SFML-2.4.1-sources.zip
-  - pushd SFML-2.4.1 && mkdir build && cd build && cmake .. && make install
-  - popd
+  - wget "http://www.sfml-dev.org/files/SFML-2.4.1-linux-gcc-64-bit.tar.gz" -O SFML.tar.gz
+  - tar -xvf SFML.tar.gz
+  - export PATH="$(pwd)/SFML-2.4.1:$PATH"
+  - export SFML_ROOT="$(pwd)/SFML-2.4.1"
+  - ./configure
 
 script:
-  - mkdir build
-  - cd build
-  - cmake ..
-  - make
+  - ./make
