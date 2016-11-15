@@ -4,6 +4,7 @@ sudo: true
 
 install:
   - sudo apt-get install libsfml-dev
+  - sudo apt-get build-dep libsfml
 
 before_script:
   - mkdir build
