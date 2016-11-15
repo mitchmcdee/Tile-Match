@@ -1,14 +1,15 @@
 language: cpp
+
 compiler: gcc
+
 sudo: false
+
 addons:
   apt:
     sources:
       - ubuntu-toolchain-r-test
-      - kalakris/cmake #backport cmake for ubuntu v12
     packages:
       - g++-5
-      - cmake
       - libudev-dev
       - libpthread-stubs0-dev
       - libgl1-mesa-dev
@@ -21,22 +22,17 @@ addons:
       - libopenal-dev
       - libflac-dev
       - libjpeg-dev
-cache:
-  apt: true
-  directories:
-  - "$HOME/.travis/cmake/build/install"
-  - "SFML-2.4.1"
 
 before_install:
-  - if [ "$CC"  == "gcc"     ]; then export CC=gcc-5; fi
-  - if [ "$CXX" == "g++"     ]; then export CXX=g++-5; fi
-
-install:
-  - wget "http://www.sfml-dev.org/files/SFML-2.4.1-linux-gcc-64-bit.tar.gz" -O SFML.tar.gz
-  - tar -xvf SFML.tar.gz
-  - export PATH="$(pwd)/SFML-2.4.1:$PATH"
-  - export SFML_ROOT="$(pwd)/SFML-2.4.1"
-  - ./configure
+  # build and install SFML
+  - mkdir sfml_install
+  - wget http://www.sfml-dev.org/files/SFML-2.4.1-sources.zip --no-check-certificate
+  - unzip -q SFML-2.4.1-sources.zip
+  - pushd SFML-2.4.1 && mkdir build && cd build && cmake .. && make install
+  - popd
 
 script:
-  - ./make
+  - mkdir build
+  - cd build
+  - cmake ..
+  - make
