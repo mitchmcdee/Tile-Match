@@ -1,15 +1,10 @@
 language: cpp
 
-compiler: gcc
-
-sudo: true
+sudo: false
 
 addons:
   apt:
-    sources:
-      - ubuntu-toolchain-r-test
     packages:
-      - g++-5
       - libudev-dev
       - libpthread-stubs0-dev
       - libgl1-mesa-dev
@@ -22,14 +17,14 @@ addons:
       - libopenal-dev
       - libflac-dev
       - libjpeg-dev
+      - cmake
 
 before_install:
   # build and install SFML
   - mkdir sfml_install
   - wget http://www.sfml-dev.org/files/SFML-2.4.1-sources.zip --no-check-certificate
   - unzip -q SFML-2.4.1-sources.zip
-  - pushd SFML-2.4.1 && mkdir build && cd build && cmake .. && make
-  - sudo make install
+  - pushd SFML-2.4.1 && mkdir build && cd build && cmake .. && make && make install
   - popd
 
 script:
