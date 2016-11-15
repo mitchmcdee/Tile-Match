@@ -223,7 +223,6 @@ int main() {
             }
         }
 
-
         char buffer[1024];
         char *answer = getcwd(buffer, sizeof(buffer));
         std::string s_cwd;
@@ -232,10 +231,12 @@ int main() {
             s_cwd = answer;
         }
 
+        sprintf(buffer, "%d", score);
+
         sf::Font font;
         font.loadFromFile(s_cwd + "/src/resources/arial.ttf");
 
-        sf::Text scoreText(std::to_string(score), font);
+        sf::Text scoreText(buffer, font);
         scoreText.setCharacterSize(64);
         scoreText.setFillColor(sf::Color::White);
         scoreText.setPosition(30, windowHeight);
