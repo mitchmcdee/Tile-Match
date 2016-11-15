@@ -8,8 +8,12 @@ before_install:
 
 install:
   - sudo apt-get install -qq g++-5
-  - sudo apt-get install libsfml-dev
-  - sudo apt-get build-dep libsfml
+  - mkdir sfml_install
+  - wget http://www.sfml-dev.org/files/SFML-2.4.1-sources.zip --no-check-certificate
+  - unzip -q SFML-2.4.1-sources.zip
+  - pushd SFML-2.4.1 && mkdir build && cd build && cmake .. && make install
+  - popd
+
 
 before_script:
   - mkdir build
