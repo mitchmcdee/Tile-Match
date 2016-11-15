@@ -58,7 +58,7 @@ void swapTiles(int* board, int* score, int width, int height, int x1, int y1, in
     visitedCount = 0;
     stackCount = 0;
     checkConnections(board, width, height, stack, visited, &stackCount, &visitedCount, x2, y2);
-    if (visitedCount < 3) {
+    if (visitedCount >= 3) {
         *score += (int)std::pow(visitedCount, 2);
         for (int i = 0; i < visitedCount; i++) {
             board[visited[i][0] * width + visited[i][1]] = -1;
